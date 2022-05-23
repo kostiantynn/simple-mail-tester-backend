@@ -47,6 +47,7 @@ class MailboxManagerService {
         new RegExp(process.env.HOSTNAME!).test(<string>path.split("/").pop())
       ) {
         const emailData = await readFile(path);
+        watcher.removeAllListeners("on");
         return emailData.toString("utf-8");
       }
     });
