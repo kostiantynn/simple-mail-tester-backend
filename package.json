@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./dist/src/index.js",
+    "start:dev": "env-cmd -f config/dev.env node ./dist/src/index.js",
     "build": "tsc --build",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
@@ -14,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chokidar": "^3.5.3",
     "fastify": "^3.29.0",
     "fastify-cors": "^6.0.2",
     "typescript": "^4.6.4"

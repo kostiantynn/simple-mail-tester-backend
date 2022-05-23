@@ -1,50 +1,55 @@
 import { exec } from "child_process";
 import { promisify } from "util";
+import { watch } from "chokidar";
+import { readFile } from "fs/promises";
 
 class MailboxManagerService {
-  execPromisfied = promisify(exec);
-  userName: string = "";
+  private execPromisfied = promisify(exec);
 
-  constructor() {
-    this.userName = this.createRandomUserName();
-  }
-
-  createRandomUserName() {
+  protected createRandomUserName() {
     return `test-${Math.random().toString(36).slice(2)}`;
   }
 
-  async createTempUserForMailbox() {
+  public async createTempUserForMailbox(userName: string) {
     try {
       const { stdout, stderr } = await this.execPromisfied(
-        `echo "user created: ${this.userName}" | useradd -m -s /bin/bash ${this.userName}`
+        `echo "user created: ${userName}" | useradd -m -s /bin/bash ${userName}`
       );
       console.log("Output", stdout);
       console.log("Error", stderr);
-      return this.userName;
-    } catch (erorr) {
-      console.log("Error", erorr);
-      return {
-        erorr,
-      };
+      return userName;
+    } catch (error: any) {
+      console.log("Error", error);
+      throw new Error(error);
     }
   }
-  async deleteTempUser() {
+
+  public async deleteTempUser(userName: string) {
     try {
       const { stdout, stderr } = await this.execPromisfied(
-        `echo "user deleted: ${this.userName}" | deluser --remove-home ${this.userName}`
+        `echo "user deleted: ${userName}" | deluser --remove-home ${userName}`
       );
       console.log("Output", stdout);
       console.log("Error", stderr);
-      return this.userName;
-    } catch (erorr) {
+      return userName;
+    } catch (erorr: any) {
       console.log("Error", erorr);
-      return {
-        erorr,
-      };
+      throw new Error(erorr);
     }
   }
-  async readMessageForGivenUser() {
-    throw new Error("Method is empty");
+  public async readMessageForGivenUser(userName: string) {
+    const watcher = watch(`/home/${userName}`, {
+      depth: 4,
+      ignored: /(^|[\/\\])\../,
+    });
+    watcher.on("add", async (path: string) => {
+      if (
+        new RegExp(process.env.HOSTNAME!).test(<string>path.split("/").pop())
+      ) {
+        const emailData = await readFile(path);
+        return emailData.toString("utf-8");
+      }
+    });
   }
 }
 
