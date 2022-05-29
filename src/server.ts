@@ -2,10 +2,10 @@ import fastify from "fastify";
 import cors from "fastify-cors";
 
 import * as mailboxManager from "./mailTesterModule/routers";
-
+import fastifyLoggerOptions from "./server/utils/fastifyLoggerOptions";
 import { Server } from "./server/Server";
 
-const server = new Server(fastify());
+const server = new Server(fastify({ logger: fastifyLoggerOptions }));
 
 server.registerPlugin({
   pluginInstance: cors,
