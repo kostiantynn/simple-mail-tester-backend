@@ -8,6 +8,7 @@ class TempMailboxDataStore extends MailboxManagerService {
     try {
       const newUser = await super.createTempUserForMailbox(userName);
       this.MailboxDataStore.set(newUser, { rawMailMessage: undefined });
+      console.log("Tested Mailbox", this.MailboxDataStore.get(userName));
       return userName;
     } catch (error: any) {
       throw new Error(error);
@@ -33,6 +34,7 @@ class TempMailboxDataStore extends MailboxManagerService {
   public async readMessageForGivenUser(userName: string) {
     if (this.MailboxDataStore.get(userName)) {
       const rawMailMessage = await super.readMessageForGivenUser(userName);
+      console.log("Tested Mailbox", this.MailboxDataStore.get(userName));
       this.MailboxDataStore.set(userName, { rawMailMessage });
       return rawMailMessage;
     } else {
