@@ -1,6 +1,6 @@
 import { exec } from "child_process";
 import { promisify } from "util";
-import { watch } from "chokidar";
+import { watch, FSWatcher } from "chokidar";
 import { readFile } from "fs/promises";
 
 class MailboxManagerService {
@@ -38,18 +38,34 @@ class MailboxManagerService {
     }
   }
   public async readMessageForGivenUser(userName: string) {
-    const watcher = watch(`/home/${userName}`, {
-      depth: 4,
-      ignored: /(^|[\/\\])\../,
-    });
-    watcher.on("add", async (path: string) => {
-      if (
-        new RegExp(process.env.HOSTNAME!).test(<string>path.split("/").pop())
-      ) {
-        const emailData = await readFile(path);
-        watcher.removeAllListeners("on");
-        return emailData.toString("utf-8");
-      }
+    try {
+      const watcher = watch(`/home/${userName}`, {
+        depth: 4,
+        ignored: /(^|[\/\\])\../,
+      });
+      const mailboxData = await this.getWatchedFile(watcher);
+      return mailboxData;
+    } catch (error: any) {
+      console.log("Error", error);
+      throw new Error(error);
+    }
+  }
+
+  private getWatchedFile(watcher: FSWatcher) {
+    return new Promise((resolve, reject) => {
+      watcher.on("add", async (path: string) => {
+        if (
+          new RegExp(process.env.HOSTNAME!).test(<string>path.split("/").pop())
+        ) {
+          try {
+            const emailData = await readFile(path);
+            watcher.removeAllListeners("on");
+            resolve(emailData.toString("utf-8"));
+          } catch (error) {
+            reject(error);
+          }
+        }
+      });
     });
   }
 }
