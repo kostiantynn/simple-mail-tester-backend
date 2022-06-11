@@ -81,8 +81,20 @@ export class MailboxValidation
 
     const publicKey = await this.generatePublicKeyForDKIM();
     const messageBuffer = this.DKIMParams.b.replace(/\s/, "");
+    console.log(
+      this.DKIMParams.a,
+      Buffer.from(parsedMessageForDKIM.join("")),
+      Buffer.from(publicKey),
+      Buffer.from(messageBuffer, "base64")
+    );
+    console.log(
+      this.DKIMParams.a,
+      parsedMessageForDKIM.join(""),
+      publicKey,
+      messageBuffer
+    );
     const verifyRes = verify(
-      "rsa-sha256",
+      this.DKIMParams.a,
       Buffer.from(parsedMessageForDKIM.join("")),
       Buffer.from(publicKey),
       Buffer.from(messageBuffer, "base64")
@@ -151,7 +163,7 @@ export class MailboxValidation
       `${this.DKIMParams.s}._domainkey.${this.DKIMParams.d}`
     );
     if (publicKeyQuery.length != 0) {
-      const pubKeyResult = publicKeyQuery[publicKeyQuery.length][0];
+      const pubKeyResult = publicKeyQuery[0][0];
       const pubKey = pubKeyResult.match(/p=(.*)/gm)[0].replace(/p=/, "");
       let parsedPubKey = "-----BEGIN PUBLIC KEY-----\n";
       let tempIndex = 0;

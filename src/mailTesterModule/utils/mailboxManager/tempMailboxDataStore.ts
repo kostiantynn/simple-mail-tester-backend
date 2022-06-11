@@ -3,6 +3,11 @@ import { MailboxManagerService } from "./mailboxManagerService";
 class TempMailboxDataStore extends MailboxManagerService {
   MailboxDataStore = new Map<string, object>();
 
+  constructor() {
+    super();
+    this.MailboxDataStore.set("test-dykfyrbdzj", {});
+  }
+
   public async createTempUserForMailbox() {
     const userName = this.createRandomUserName();
     try {
