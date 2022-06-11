@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import tempMailboxDataStore from "../utils/mailboxManager/tempMailboxDataStore";
+import { MailboxValidation } from "../utils/mailboxValidation/mailboxValidationService";
 import { RouteGenericInterfaceDeleteAnalyzeMailbox } from "./reqInterface";
 
 const createNewMailbox = async (req: FastifyRequest, rep: FastifyReply) => {
@@ -18,10 +19,16 @@ const analyzeMailbox = async (
 ) => {
   const userName = req.body.userName;
   if (userName) {
-    const emailContent = await tempMailboxDataStore.readMessageForGivenUser(
-      userName
+    const emailContent = <string>(
+      await tempMailboxDataStore.readMessageForGivenUser(userName)
     );
-    rep.status(200).send({ content: emailContent });
+    const mailBoxValidator = new MailboxValidation(emailContent);
+    await mailBoxValidator.parseMail();
+    await mailBoxValidator.validateRDNS();
+    await mailBoxValidator.validateSPF();
+    await mailBoxValidator.validateDMARC();
+    const validationResults = mailBoxValidator.validationResults;
+    rep.status(200).send({ validationResults });
   } else {
     rep.status(400).send({
       error: "Username wasn't provided.",
