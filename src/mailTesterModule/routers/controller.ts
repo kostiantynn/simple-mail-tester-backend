@@ -26,6 +26,7 @@ const analyzeMailbox = async (
     await mailBoxValidator.parseMail();
     await mailBoxValidator.validateRDNS();
     await mailBoxValidator.validateSPF();
+    await mailBoxValidator.validateDKIM();
     await mailBoxValidator.validateDMARC();
     const validationResults = mailBoxValidator.validationResults;
     rep.status(200).send({ validationResults });

@@ -138,7 +138,7 @@ export class MailboxValidation
       this.addNewValidationResult = {
         ...this.generateResultBasedOnValidation(
           true,
-          false,
+          true,
           ValidationType.DMARC
         ),
         validationDetails,
