@@ -59,25 +59,19 @@ export class MailboxValidation
           return `${itemsHeaderLine[0].toLowerCase().trim()}:${itemsHeaderLine
             .slice(1)
             .join(":")
+            .replace(/(\r\n)|(\n)/gm, "")
             .trim()}\r\n`;
         }
       })
       .filter((headerItem: any) => headerItem != undefined);
 
-    const dkimSignatureHeaderItem = this.parsedMessage.headerLines
-      .find((headerLine: any) => headerLine.key == "dkim-signature")
-      .line.replace(/\r\n/gm, " ")
-      .replace(/\t/gm, "");
-
-    let dkimSignatureHeaderItems = dkimSignatureHeaderItem.split(":");
-    let otherHeaders = dkimSignatureHeaderItems.slice(1).join(":");
-    otherHeaders = otherHeaders.replace(/b=(.*)/gm, "b=;").trim();
-    parsedMessageForDKIM.push(
-      [
-        dkimSignatureHeaderItems[0].toLowerCase(),
-        ...otherHeaders.split(":"),
-      ].join(":")
-    );
+    const DKIM = this.parsedMessage.headers.get("dkim-signature");
+    let DKIMHeadersPayload = `dkim-signature:${DKIM.value};`;
+    for (let param in DKIM.params) {
+      DKIMHeadersPayload +=
+        param != "b" ? ` ${param}=${DKIM.params[param]};` : " b=";
+    }
+    parsedMessageForDKIM.push(DKIMHeadersPayload);
 
     const publicKey = await this.generatePublicKeyForDKIM();
     const messageBuffer = this.DKIMParams.b.replace(/\s/gm, "");
