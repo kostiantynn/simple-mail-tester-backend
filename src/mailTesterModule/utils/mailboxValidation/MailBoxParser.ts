@@ -52,9 +52,7 @@ export class MailBoxParser {
       : { result: "Validation Failed", passed: false, type: validationType };
   }
 
-  protected set addNewValidationResult(validationResult: {
-    [key: string]: any;
-  }) {
+  protected set addNewValidationResult(validationResult: any) {
     this._validationResults.push(validationResult);
   }
   public get validationResults() {
