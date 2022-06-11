@@ -9,7 +9,7 @@ export class MailBoxParser {
   parsedMessage: any;
   private _senderIp: string;
   private _DKIMParams: { [key: string]: string };
-  private _validationResults: Record<string, unknown>[] = [];
+  private _validationResults: any = [];
 
   constructor(rawMessage: string) {
     this.rawMessage = rawMessage;
