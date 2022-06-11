@@ -19,7 +19,7 @@ export class MailboxValidation
     this.senderIp = senderIp[0];
     const senderDomen = dnsData.split(" ")[1];
     const validationResult = this.generateResultBasedOnValidation(
-      await reverse(senderIp),
+      await reverse(this.senderIp),
       senderDomen,
       ValidationType.RDNS
     );
