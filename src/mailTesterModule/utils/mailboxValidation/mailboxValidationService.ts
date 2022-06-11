@@ -80,7 +80,7 @@ export class MailboxValidation
     );
 
     const publicKey = await this.generatePublicKeyForDKIM();
-    const messageBuffer = this.DKIMParams.b.replace(/\s/, "");
+    const messageBuffer = this.DKIMParams.b.replace(/\s/gm, "");
     console.log(
       this.DKIMParams.a,
       Buffer.from(parsedMessageForDKIM.join("")),
