@@ -163,7 +163,12 @@ export class MailboxValidation
       `${this.DKIMParams.s}._domainkey.${this.DKIMParams.d}`
     );
     if (publicKeyQuery.length != 0) {
-      const pubKeyResult = publicKeyQuery[0][0];
+      let pubKeyResult = publicKeyQuery[0][0];
+      if (publicKeyQuery[0].length > 1) {
+        for (let i = 1; i < publicKeyQuery[0].length; i++) {
+          pubKeyResult += publicKeyQuery[0][i];
+        }
+      }
       const pubKey = pubKeyResult.match(/p=(.*)/gm)[0].replace(/p=/, "");
       let parsedPubKey = "-----BEGIN PUBLIC KEY-----\n";
       let tempIndex = 0;
