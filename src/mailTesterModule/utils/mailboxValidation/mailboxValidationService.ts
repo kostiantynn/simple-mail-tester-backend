@@ -16,7 +16,7 @@ export class MailboxValidation
   public async validateRDNS(): Promise<void> {
     const dnsData = this.parsedMessage.headers.get("received")[0];
     const senderIp = dnsData.match(/\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/);
-    this.senderIp = senderIp;
+    this.senderIp = senderIp[0];
     const senderDomen = dnsData.split(" ")[1];
     const validationResult = this.generateResultBasedOnValidation(
       await reverse(senderIp),
