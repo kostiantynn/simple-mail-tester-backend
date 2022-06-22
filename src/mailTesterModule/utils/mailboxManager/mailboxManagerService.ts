@@ -38,12 +38,17 @@ class MailboxManagerService {
     }
   }
   public async readMessageForGivenUser(userName: string) {
+    const messageDidNotComeInTime = () => {
+      throw new Error("There is no message in mailbox, please try again");
+    };
+    const timerFallout = setTimeout(messageDidNotComeInTime, 60000);
     try {
       const watcher = watch(`/home/${userName}`, {
         depth: 4,
         ignored: /(^|[\/\\])\../,
       });
       const mailboxData = await this.getWatchedFile(watcher);
+      clearTimeout(timerFallout);
       return mailboxData;
     } catch (error: any) {
       console.log("Error", error);
