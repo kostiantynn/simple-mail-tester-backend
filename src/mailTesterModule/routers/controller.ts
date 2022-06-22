@@ -19,17 +19,23 @@ const analyzeMailbox = async (
 ) => {
   const userName = req.body.userName;
   if (userName) {
-    const emailContent = <string>(
-      await tempMailboxDataStore.readMessageForGivenUser(userName)
-    );
-    const mailBoxValidator = new MailboxValidation(emailContent);
-    await mailBoxValidator.parseMail();
-    await mailBoxValidator.validateRDNS();
-    await mailBoxValidator.validateSPF();
-    await mailBoxValidator.validateDKIM();
-    await mailBoxValidator.validateDMARC();
-    const validationResults = mailBoxValidator.validationResults;
-    rep.status(200).send({ validationResults });
+    try {
+      const emailContent = <string>(
+        await tempMailboxDataStore.readMessageForGivenUser(userName)
+      );
+      const mailBoxValidator = new MailboxValidation(emailContent);
+      await mailBoxValidator.parseMail();
+      await mailBoxValidator.validateRDNS();
+      await mailBoxValidator.validateSPF();
+      await mailBoxValidator.validateDKIM();
+      await mailBoxValidator.validateDMARC();
+      const validationResults = mailBoxValidator.validationResults;
+      rep.status(200).send({ validationResults });
+    } catch (error: any) {
+      rep.status(400).send({
+        error,
+      });
+    }
   } else {
     rep.status(400).send({
       error: "Username wasn't provided.",

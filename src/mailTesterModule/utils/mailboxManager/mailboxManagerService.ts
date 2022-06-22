@@ -34,7 +34,10 @@ class MailboxManagerService {
       return userName;
     } catch (erorr: any) {
       console.log("Error", erorr);
-      throw new Error(erorr);
+      const { stdout, stderr } = await this.execPromisfied(
+        `echo "user deleted: ${userName}" | deluser ${userName}`
+      );
+      return userName;
     }
   }
   public async readMessageForGivenUser(userName: string) {
