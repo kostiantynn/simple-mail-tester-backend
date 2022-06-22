@@ -2,6 +2,7 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { watch, FSWatcher } from "chokidar";
 import { readFile } from "fs/promises";
+import { messageDidNotComeInTime } from "./helpers";
 
 class MailboxManagerService {
   private execPromisfied = promisify(exec);
@@ -41,22 +42,14 @@ class MailboxManagerService {
     }
   }
   public async readMessageForGivenUser(userName: string) {
-    const messageDidNotComeInTime = () => {
-      throw new Error("There is no message in mailbox, please try again");
-    };
-    const timerFallout = setTimeout(messageDidNotComeInTime, 60000);
-    try {
-      const watcher = watch(`/home/${userName}`, {
-        depth: 4,
-        ignored: /(^|[\/\\])\../,
-      });
-      const mailboxData = await this.getWatchedFile(watcher);
-      clearTimeout(timerFallout);
-      return mailboxData;
-    } catch (error: any) {
-      console.log("Error", error);
-      throw new Error(error);
-    }
+    const timerFallout = setTimeout(messageDidNotComeInTime, 10000);
+    const watcher = watch(`/home/${userName}`, {
+      depth: 4,
+      ignored: /(^|[\/\\])\../,
+    });
+    const mailboxData = await this.getWatchedFile(watcher);
+    clearTimeout(timerFallout);
+    return mailboxData;
   }
 
   private getWatchedFile(watcher: FSWatcher) {
