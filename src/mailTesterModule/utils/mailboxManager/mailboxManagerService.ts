@@ -43,12 +43,13 @@ class MailboxManagerService {
   }
   public async readMessageForGivenUser(userName: string) {
     try {
-      messageDidNotComeInTime();
+      const timer = messageDidNotComeInTime();
       const watcher = watch(`/home/${userName}`, {
         depth: 4,
         ignored: /(^|[\/\\])\../,
       });
       const mailboxData = await this.getWatchedFile(watcher);
+      clearTimeout(timer);
       return mailboxData;
     } catch (error: any) {
       throw new Error(error);

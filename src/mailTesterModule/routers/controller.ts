@@ -18,6 +18,17 @@ const analyzeMailbox = async (
   rep: FastifyReply
 ) => {
   const userName = req.body.userName;
+  const headers = rep.getHeaders();
+  process.on(
+    "uncaughtException",
+    function uncaughtExceptionCallback(error: any) {
+      rep.sent = true;
+      rep.raw.writeHead(400, headers);
+      rep.raw.write(error);
+      process.removeListener("uncaughtException", uncaughtExceptionCallback);
+      rep.raw.end();
+    }
+  );
   if (userName) {
     try {
       const emailContent = <string>(
