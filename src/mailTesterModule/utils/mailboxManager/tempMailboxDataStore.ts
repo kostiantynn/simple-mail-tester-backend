@@ -32,15 +32,19 @@ class TempMailboxDataStore extends MailboxManagerService {
   }
 
   public async readMessageForGivenUser(userName: string) {
-    if (this.MailboxDataStore.get(userName)) {
-      const rawMailMessage = await super.readMessageForGivenUser(userName);
-      console.log("Tested Mailbox", this.MailboxDataStore.get(userName));
-      this.MailboxDataStore.set(userName, { rawMailMessage });
-      return rawMailMessage;
-    } else {
-      throw new Error(
-        JSON.stringify({ error: `No data found for username: ${userName}` })
-      );
+    try {
+      if (this.MailboxDataStore.get(userName)) {
+        const rawMailMessage = await super.readMessageForGivenUser(userName);
+        console.log("Tested Mailbox", this.MailboxDataStore.get(userName));
+        this.MailboxDataStore.set(userName, { rawMailMessage });
+        return rawMailMessage;
+      } else {
+        throw new Error(
+          JSON.stringify({ error: `No data found for username: ${userName}` })
+        );
+      }
+    } catch (error: any) {
+      throw new Error(error);
     }
   }
 }

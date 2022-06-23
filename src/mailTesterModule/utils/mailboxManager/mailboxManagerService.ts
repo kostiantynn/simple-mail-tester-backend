@@ -42,14 +42,18 @@ class MailboxManagerService {
     }
   }
   public async readMessageForGivenUser(userName: string) {
-    const timerFallout = setTimeout(messageDidNotComeInTime, 10000);
-    const watcher = watch(`/home/${userName}`, {
-      depth: 4,
-      ignored: /(^|[\/\\])\../,
-    });
-    const mailboxData = await this.getWatchedFile(watcher);
-    clearTimeout(timerFallout);
-    return mailboxData;
+    try {
+      const timerFallout = setTimeout(messageDidNotComeInTime, 10000);
+      const watcher = watch(`/home/${userName}`, {
+        depth: 4,
+        ignored: /(^|[\/\\])\../,
+      });
+      const mailboxData = await this.getWatchedFile(watcher);
+      clearTimeout(timerFallout);
+      return mailboxData;
+    } catch (error: any) {
+      throw new Error(error);
+    }
   }
 
   private getWatchedFile(watcher: FSWatcher) {
