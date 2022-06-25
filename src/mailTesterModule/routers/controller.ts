@@ -22,9 +22,9 @@ const analyzeMailbox = async (
   process.on(
     "uncaughtException",
     function uncaughtExceptionCallback(error: any) {
-      rep.sent = true;
+      headers["content-type"] = "application/json";
       rep.raw.writeHead(400, headers);
-      rep.raw.write(error);
+      rep.raw.write(JSON.stringify(error));
       process.removeListener("uncaughtException", uncaughtExceptionCallback);
       rep.raw.end();
     }
