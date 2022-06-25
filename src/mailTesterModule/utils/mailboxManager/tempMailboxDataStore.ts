@@ -11,7 +11,7 @@ class TempMailboxDataStore extends MailboxManagerService {
       console.log("Tested Mailbox", this.MailboxDataStore.get(userName));
       return userName;
     } catch (error: any) {
-      throw new Error(error);
+      throw new Error(error.message);
     }
   }
 
@@ -22,29 +22,25 @@ class TempMailboxDataStore extends MailboxManagerService {
         this.MailboxDataStore.delete(deletedUser);
         return deletedUser;
       } catch (error: any) {
-        throw new Error(error);
+        throw new Error(error.message);
       }
     } else {
-      throw new Error(
-        JSON.stringify({ error: `No data found for username: ${userName}` })
-      );
+      throw new Error(`No data found for username: ${userName}`);
     }
   }
 
   public async readMessageForGivenUser(userName: string) {
-    try {
-      if (this.MailboxDataStore.get(userName)) {
+    if (this.MailboxDataStore.get(userName)) {
+      try {
         const rawMailMessage = await super.readMessageForGivenUser(userName);
         console.log("Tested Mailbox", this.MailboxDataStore.get(userName));
         this.MailboxDataStore.set(userName, { rawMailMessage });
         return rawMailMessage;
-      } else {
-        throw new Error(
-          JSON.stringify({ error: `No data found for username: ${userName}` })
-        );
+      } catch (error: any) {
+        throw new Error(error.message);
       }
-    } catch (error: any) {
-      throw new Error(error);
+    } else {
+      throw new Error(`No data found for username: ${userName}`);
     }
   }
 }

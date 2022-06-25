@@ -43,9 +43,7 @@ const analyzeMailbox = async (
       const validationResults = mailBoxValidator.validationResults;
       rep.status(200).send({ validationResults });
     } catch (error: any) {
-      rep.status(400).send({
-        error,
-      });
+      rep.status(400).send(error);
     }
   } else {
     rep.status(400).send({

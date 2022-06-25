@@ -21,7 +21,7 @@ class MailboxManagerService {
       return userName;
     } catch (error: any) {
       console.log("Error", error);
-      throw new Error(error);
+      throw new Error(error.message);
     }
   }
 
@@ -52,7 +52,7 @@ class MailboxManagerService {
       clearTimeout(timer);
       return mailboxData;
     } catch (error: any) {
-      throw new Error(error);
+      throw new Error(error.message);
     }
   }
 
