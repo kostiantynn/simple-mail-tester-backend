@@ -32,7 +32,7 @@ export class MailboxValidation
     };
   }
   public async validateSPF(): Promise<void> {
-    if (this.senderIp == "") throw new Error("Sender IP wasn't found");
+    if (this.senderIp === "") throw new Error("Sender IP wasn't found");
     const validationResult = this.generateResultBasedOnValidation(
       await spf(this.senderIp, this.DKIMParams.d),
       "Pass",
@@ -52,7 +52,7 @@ export class MailboxValidation
       .map((header: string) => {
         let parsedHeader = header.trim().toLowerCase();
         let tempHeaderLine = this.parsedMessage.headerLines.find(
-          (headerLine: any) => headerLine.key == parsedHeader
+          (headerLine: any) => headerLine.key === parsedHeader
         );
         if (tempHeaderLine) {
           let itemsHeaderLine = tempHeaderLine.line.split(":");
@@ -63,13 +63,13 @@ export class MailboxValidation
             .trim()}\r\n`;
         }
       })
-      .filter((headerItem: any) => headerItem != undefined);
+      .filter((headerItem: any) => headerItem !== undefined);
 
     const DKIM = this.parsedMessage.headers.get("dkim-signature");
     let DKIMHeadersPayload = `dkim-signature:${DKIM.value};`;
     for (let param in DKIM.params) {
       DKIMHeadersPayload +=
-        param != "b" ? ` ${param}=${DKIM.params[param]};` : " b=";
+        param !== "b" ? ` ${param}=${DKIM.params[param]};` : " b=";
     }
     parsedMessageForDKIM.push(DKIMHeadersPayload);
 
@@ -109,7 +109,7 @@ export class MailboxValidation
   }
   public async validateDMARC() {
     const DMARCRecord = await resolveTxt(`_dmarc.${this.DKIMParams.d}`);
-    if (DMARCRecord.length == 0) {
+    if (DMARCRecord.length === 0) {
       this.validationResults.push({
         ...this.generateResultBasedOnValidation(
           true,
@@ -129,7 +129,7 @@ export class MailboxValidation
       if (DMARCPolicy.length > 0 && DMARCPolicy[0]) {
         let DMARCPolicyParsed = DMARCPolicy[0].replace(/p=(.*)/gm, "");
         validationDetails.policy =
-          DMARCPolicyParsed == "none"
+          DMARCPolicyParsed === "none"
             ? "DMARC Quarantine/Reject policy Not enabled"
             : "DMARC Quarantine/Reject policy enabled";
       } else {
@@ -156,7 +156,7 @@ export class MailboxValidation
     const publicKeyQuery = await resolveTxt(
       `${this.DKIMParams.s}._domainkey.${this.DKIMParams.d}`
     );
-    if (publicKeyQuery.length != 0) {
+    if (publicKeyQuery.length !== 0) {
       let pubKeyResult = publicKeyQuery[0][0];
       if (publicKeyQuery[0].length > 1) {
         for (let i = 1; i < publicKeyQuery[0].length; i++) {
@@ -167,7 +167,7 @@ export class MailboxValidation
       let parsedPubKey = "-----BEGIN PUBLIC KEY-----\n";
       let tempIndex = 0;
       for (let i = 0; i < pubKey.length; i++) {
-        if (i % 64 == 0 && i != 0) {
+        if (i % 64 === 0 && i !== 0) {
           parsedPubKey += pubKey.slice(tempIndex, i) + "\n";
           tempIndex = i;
         }

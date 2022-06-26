@@ -1,5 +1,5 @@
 import server from "./server";
 
 (async () => {
-  await server.initServer("3000", "0.0.0.0");
+  await server.initServer(process.env.DEV_PORT, process.env.PROD_PORT);
 })();
